@@ -69,6 +69,7 @@
         </template>
       </el-table-column>
       <el-table-column
+        width="190"
         label="操作">
         <template slot-scope="scope">
           <!-- 通过scope.$index可以获取到当前行的索引 -->
@@ -134,7 +135,29 @@
       </div>
     </el-dialog>
 
-
+    <!-- 修改用户的对话框 -->
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editUserDialogFormVisible"
+      @close="handleClose">
+      <el-form
+        label-width="80px"
+        :model="formData">
+        <el-form-item label="用户名">
+          <el-input v-model="formData.username" auto-complete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="formData.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editUserDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleEdit">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -165,7 +188,7 @@ export default {
         email: '',
         mobile: ''
       },
-      //表单验证规则
+      // 表单验证规则
       rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -176,7 +199,6 @@ export default {
           { min: 3, max: 8, message: '长度在 3 到 8 个字符', trigger: 'blur' }
         ]
       }
-   
     };
   },
   created() {
@@ -276,13 +298,13 @@ export default {
     },
     // 添加用户
     handleAdd() {
-      //表单验证
-      this.$refs.form.validate(async(valid) => {
-          if (!valid) {
-            this.$message.warning('验证失败');
-            return;
-          } 
-           // 验证成功，发送异步请求
+      // 表单验证
+      this.$refs.form.validate(async (valid) => {
+        if (!valid) {
+          this.$message.warning('验证失败');
+          return;
+        }
+        // 验证成功，发送异步请求
         const response = await this.$http.post('users', this.formData);
         // 获取数据，判断添加是否成功
         const { meta: { status, msg } } = response.data;
@@ -298,7 +320,7 @@ export default {
           // 失败
           this.$message.error(msg);
         }
-        }); 
+      });
     },
     // 关闭对话框的时候，清空文本框
     handleClose() {
@@ -307,7 +329,39 @@ export default {
         this.formData[key] = '';
       }
     },
-   
+    // 点击编辑按钮，打开修改用户的对话框
+    handleOpenEditDialog(user) {
+      // 打开修改用户的对话框
+      this.editUserDialogFormVisible = true;
+      // 设置formData的值
+      this.formData.username = user.username;
+      this.formData.email = user.email;
+      this.formData.mobile = user.mobile;
+      // 点击编辑按钮的时候。记录下用户的id，点击确定按钮的时候使用
+      this.formData.id = user.id;
+    },
+    // 点击确定按钮，修改用户信息
+    async handleEdit() {
+      // /users/:id  mobile  email
+      const response = await this.$http.put(`/users/${this.formData.id}`, {
+        email: this.formData.email,
+        mobile: this.formData.mobile
+      });
+
+      const { meta: { status, msg } } = response.data;
+      if (status === 200) {
+        // 成功
+        // 关闭对话框
+        this.editUserDialogFormVisible = false;
+        // 刷新table
+        this.loadData();
+        // 提示
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
+
+    }
   }
 };
 </script>
