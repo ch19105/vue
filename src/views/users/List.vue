@@ -69,7 +69,6 @@
         </template>
       </el-table-column>
       <el-table-column
-        width="190"
         label="操作">
         <template slot-scope="scope">
           <!-- 通过scope.$index可以获取到当前行的索引 -->
@@ -135,6 +134,7 @@
       </div>
     </el-dialog>
 
+
   </el-card>
 </template>
 
@@ -165,7 +165,7 @@ export default {
         email: '',
         mobile: ''
       },
-     
+   
     };
   },
   created() {
@@ -264,7 +264,7 @@ export default {
       }
     },
     // 添加用户
-    async handleAdd() {
+   async handleAdd() {
         // 验证成功，发送异步请求
         const response = await this.$http.post('users', this.formData);
         // 获取数据，判断添加是否成功
@@ -277,14 +277,26 @@ export default {
           this.loadData();
           // 关闭对话框
           this.addUserDialogFormVisible = false;
+
+          // 遍历对象的所有属性，把属性对应的值设置为空
+          for (let key in this.formData) {
+            this.formData[key] = '';
+          }
         } else {
           // 失败
           this.$message.error(msg);
         }
+    },
+    // 关闭对话框的时候，清空文本框
+    handleClose() {
+      // 遍历对象的所有属性，把属性对应的值设置为空
+      for (let key in this.formData) {
+        this.formData[key] = '';
       }
     },
-    
-  };
+   
+  }
+};
 </script>
 
 <style>
