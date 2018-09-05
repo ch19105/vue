@@ -20,6 +20,7 @@
     </el-row>
     <!-- 表格 -->
     <el-table
+      v-loading="loading"
       :data="tableData"
       border
       stripe
@@ -45,13 +46,35 @@
         label="电话"
         width="180">
       </el-table-column>
-      <el-table-column
-        prop="creat_time"
-        label="时间">
+       <el-table-column
+        label="日期">
+        <template slot-scope="scope">
+          {{scope.row.create_time | fmtDate('YYYY-MM-DD')}}
+        </template>
       </el-table-column>
       <el-table-column
         prop="mg_state"
-        label="状态">
+        label="用户状态"
+        width="80">
+        <template slot-scope="scope">
+          <!-- 绑定到当前用户的mg_state属性 -->
+          <el-switch
+          v-model="scope.row.mg_state"
+          active-color="#13ce66"
+          inactive-color="#ff4949">
+        </el-switch>
+        </template>
+      </el-table-column>
+       <el-table-column
+        label="操作"
+        width="190">
+        <template slot-scope="scope">
+        <!-- 通过scope.$index可以获去当前行的索引 -->
+        <!-- scope.row 当前行所绑定的数据对象 -->
+      <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+      <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+      <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
+      </template>
       </el-table-column>
     </el-table>
   </el-card>
@@ -61,7 +84,8 @@
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      loading: true
     };
   },
   created() {
@@ -77,14 +101,16 @@ export default {
       this.$http.defaults.headers.common['Authorization'] = token;    
      
      const response = await this.$http.get('users?pagenum=1&pagesize=10');
-       const {meta:{msg,status}} = response.data;
+      // 请求结束
+      this.loading = false;
+      const {meta:{msg,status}} = response.data;
           if(status === 200 ) {
             //注意两个dta
             this.tableData = response.data.data.users;
           }else {
             this.$message.error(msg);
           }
-          
+
       this.$http
         .get('users?pagenum=1&pagesize=10')
         .then((response) => {
