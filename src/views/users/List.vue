@@ -70,22 +70,24 @@ export default {
   },
   methods: {
     // 异步请求用用户列表数据
-    loadData(){
+    async loadData(){
       // 设置token
       const token = sessionStorage.getItem('token');
     // 设置请求头
       this.$http.defaults.headers.common['Authorization'] = token;    
      
-      this.$http
-        .get('users?pagenum=1&pagesize=10')
-        .then((response) => {
-          const {meta:{msg,status}} = response.data;
+     const response = await this.$http.get('users?pagenum=1&pagesize=10');
+       const {meta:{msg,status}} = response.data;
           if(status === 200 ) {
             //注意两个dta
             this.tableData = response.data.data.users;
           }else {
             this.$message.error(msg);
           }
+          
+      this.$http
+        .get('users?pagenum=1&pagesize=10')
+        .then((response) => {
         })
         .catch((err) => {
           console.log(err);
