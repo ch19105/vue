@@ -165,6 +165,17 @@ export default {
         email: '',
         mobile: ''
       },
+      //表单验证规则
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 8, message: '长度在 3 到 8 个字符', trigger: 'blur' }
+        ]
+      }
    
     };
   },
@@ -264,8 +275,14 @@ export default {
       }
     },
     // 添加用户
-   async handleAdd() {
-        // 验证成功，发送异步请求
+    handleAdd() {
+      //表单验证
+      this.$refs.form.validate(async(valid) => {
+          if (!valid) {
+            this.$message.warning('验证失败');
+            return;
+          } 
+           // 验证成功，发送异步请求
         const response = await this.$http.post('users', this.formData);
         // 获取数据，判断添加是否成功
         const { meta: { status, msg } } = response.data;
@@ -277,15 +294,11 @@ export default {
           this.loadData();
           // 关闭对话框
           this.addUserDialogFormVisible = false;
-
-          // 遍历对象的所有属性，把属性对应的值设置为空
-          for (let key in this.formData) {
-            this.formData[key] = '';
-          }
         } else {
           // 失败
           this.$message.error(msg);
         }
+        }); 
     },
     // 关闭对话框的时候，清空文本框
     handleClose() {
