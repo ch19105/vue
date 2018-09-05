@@ -75,7 +75,7 @@
           <!-- scope.row 当前这一行所绑定的数据对象 -->
           <!-- {{ scope.row.id }} -->
           <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          <el-button @click="handleDelete(scope.row.id)" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
           <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
@@ -170,6 +170,42 @@ export default {
     // 搜索功能
     handleSearch() {
       this.loadData();
+    },
+    // 删除用户
+    handleDelete(id) {
+      // 删除提示
+      this.$confirm('确定删除该用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 点击确定按钮执行
+        // 在postman中测试接口
+        const response = await this.$http.delete(`users/${id}`);
+
+        // 获取返回的数据，判断删除是否成功
+        const { meta: { status, msg } } = response.data;
+        if (status === 200) {
+          // 成功
+          this.$message.success(msg);
+
+          // 如果是最后一页，并且只有一条数据，此时删除数据会有问题
+          if (this.pagenum > 1 && this.tableData.length === 1) {
+            this.pagenum--;
+          }
+          // 刷新表格
+          this.loadData();
+        } else {
+          // 失败
+          this.$message.error(msg);
+        }
+      }).catch(() => {
+        // 点击取消按钮执行
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     }
   }
 };
