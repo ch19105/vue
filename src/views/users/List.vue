@@ -18,7 +18,7 @@
           <el-button @click="handleSearch" slot="append" icon="el-icon-search"></el-button>
         </el-input>
 
-        <el-button @click="addUserdialogFormVisible = true" type="success" plain>添加用户</el-button>
+        <el-button @click="addUserDialogFormVisible = true" type="success" plain>添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -61,7 +61,7 @@
         <template slot-scope="scope">
           <!-- 让开关绑定当前用户的 mg_state属性 -->
           <el-switch
-          @change="handleChange(scope.row)"
+            @change="handleChange(scope.row)"
             v-model="scope.row.mg_state"
             active-color="#13ce66"
             inactive-color="#ff4949">
@@ -69,13 +69,13 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="操作"
-        width="190">
+        width="190"
+        label="操作">
         <template slot-scope="scope">
           <!-- 通过scope.$index可以获取到当前行的索引 -->
           <!-- scope.row 当前这一行所绑定的数据对象 -->
           <!-- {{ scope.row.id }} -->
-          <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+          <el-button @click="handleOpenEditDialog(scope.row)" size="mini" type="primary" icon="el-icon-edit" plain></el-button>
           <el-button @click="handleDelete(scope.row.id)" size="mini" type="danger" icon="el-icon-delete" plain></el-button>
           <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
         </template>
@@ -106,31 +106,35 @@
       :total="total">
     </el-pagination>
 
-    <!-- 添加用户对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addUserdialogFormVisible">
-    <el-form
-    label-width="80px"
-    :model="formData">
-      <el-form-item label="用户名">
-        <el-input v-model="formData.name" auto-complete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="密码">
-        <el-input type="password" v-model="formData.password"
-        auto-complete="off"></el-input>
-      </el-form-item>
-       <el-form-item label="邮箱">
-        <el-input v-model="formData.email" auto-complete="off"></el-input>
-      </el-form-item>
-       <el-form-item label="电话">
-        <el-input v-model="formData.mobile" auto-complete="off"></el-input>
-      </el-form-item>
-    </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="addUserdialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="addUserdialogFormVisible = false">确 定</el-button>
-    </div>
+    <!-- 添加用户的对话框 -->
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addUserDialogFormVisible"
+      @close="handleClose">
+      <el-form
+        ref="form"
+        :rules="rules"
+        label-width="80px"
+        :model="formData">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="formData.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input type="password" v-model="formData.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="formData.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addUserDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAdd">确 定</el-button>
+      </div>
+    </el-dialog>
 
-</el-dialog>
   </el-card>
 </template>
 
@@ -150,15 +154,18 @@ export default {
       total: 0,
       // 绑定搜索文本框
       searchValue: '',
-      //控制添加用户对话框的显示或隐藏
-      addUserdialogFormVisible: false,
-      //绑定表单对象
+      // 控制添加用户对话框的显示或隐藏
+      addUserDialogFormVisible: false,
+      // 控制修改用户对话框的显示或隐藏
+      editUserDialogFormVisible: false,
+      // 绑定的表单对象
       formData: {
         username: '',
         password: '',
         email: '',
         mobile: ''
-      }
+      },
+     
     };
   },
   created() {
@@ -245,16 +252,39 @@ export default {
     },
     // 修改用户状态
     async handleChange(user) {
+      // console.log(user);
+      // 在postman中测试接口
       const response = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
-      const { meta: { status, msg }} = response.data;
+
+      const { meta: { status, msg } } = response.data;
       if (status === 200) {
         this.$message.success(msg);
       } else {
         this.$message.error(msg);
       }
-    }
-  }
-};
+    },
+    // 添加用户
+    async handleAdd() {
+        // 验证成功，发送异步请求
+        const response = await this.$http.post('users', this.formData);
+        // 获取数据，判断添加是否成功
+        const { meta: { status, msg } } = response.data;
+        if (status === 201) {
+          // 成功
+          // 提示
+          this.$message.success(msg);
+          // 刷新表格
+          this.loadData();
+          // 关闭对话框
+          this.addUserDialogFormVisible = false;
+        } else {
+          // 失败
+          this.$message.error(msg);
+        }
+      }
+    },
+    
+  };
 </script>
 
 <style>
