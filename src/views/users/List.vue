@@ -9,10 +9,13 @@
     <!-- 搜索 -->
     <el-row class="row">
       <el-col :span="24">
+        <!-- 搜索文本框 -->
         <el-input
+          clearable
+          v-model="searchValue"
           style="width: 300px"
           placeholder="请输入内容">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button @click="handleSearch" slot="append" icon="el-icon-search"></el-button>
         </el-input>
 
         <el-button type="success" plain>添加用户</el-button>
@@ -25,12 +28,12 @@
       border
       stripe
       style="width: 100%">
-      <!-- 序列化 -->
+      <!-- 序号列 -->
       <el-table-column
         type="index"
         width="50">
       </el-table-column>
-      <!-- 绑定对象的属性 -->
+      <!-- prop绑定对象的属性，当前列的数据 -->
       <el-table-column
         prop="username"
         label="姓名"
@@ -46,40 +49,52 @@
         label="电话"
         width="180">
       </el-table-column>
-       <el-table-column
-        label="日期">
+      <el-table-column
+        label="时间">
         <template slot-scope="scope">
-          {{scope.row.create_time | fmtDate('YYYY-MM-DD')}}
+          {{ scope.row.create_time | fmtDate('YYYY-MM-DD') }}
         </template>
       </el-table-column>
       <el-table-column
-        prop="mg_state"
-        label="用户状态"
-        width="80">
+        width="80"
+        label="用户状态">
         <template slot-scope="scope">
-          <!-- 绑定到当前用户的mg_state属性 -->
+          <!-- 让开关绑定当前用户的 mg_state属性 -->
           <el-switch
-          v-model="scope.row.mg_state"
-          active-color="#13ce66"
-          inactive-color="#ff4949">
-        </el-switch>
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
         </template>
       </el-table-column>
-       <el-table-column
+      <el-table-column
         label="操作"
         width="190">
         <template slot-scope="scope">
-        <!-- 通过scope.$index可以获去当前行的索引 -->
-        <!-- scope.row 当前行所绑定的数据对象 -->
-      <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
-      <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
-      <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
-      </template>
+          <!-- 通过scope.$index可以获取到当前行的索引 -->
+          <!-- scope.row 当前这一行所绑定的数据对象 -->
+          <!-- {{ scope.row.id }} -->
+          <el-button size="mini" type="primary" icon="el-icon-edit" plain></el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete" plain></el-button>
+          <el-button size="mini" type="success" icon="el-icon-check" plain></el-button>
+        </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页 -->
-      <el-pagination
+    <!--
+      事件
+      size-change 页容量发生改变的时候执行
+      current-change 页码改变的时候执行
+
+      属性
+      current-page 当前页码
+      page-sizes 分页选择器 里显示的内容
+      page-size 默认当前的页容量
+      layout 布局
+      total 总条数
+     -->
+    <el-pagination
       style="margin-top: 15px"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -89,7 +104,6 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
-
   </el-card>
 </template>
 
@@ -106,7 +120,9 @@ export default {
       // 页容量
       pagesize: 2,
       // 总数据量
-      total: 0
+      total: 0,
+      // 绑定搜索文本框
+      searchValue: ''
     };
   },
   created() {
@@ -117,12 +133,13 @@ export default {
     // 异步请求用户列表数据
     async loadData() {
       // 请求开始
+      this.loading = true;
       // 设置token
       const token = sessionStorage.getItem('token');
       // 设置请求头
       this.$http.defaults.headers.common['Authorization'] = token;
 
-      const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`);
       // 请求结束
       this.loading = false;
 
@@ -149,6 +166,10 @@ export default {
       this.loadData();
 
       console.log(`当前页: ${val}`);
+    },
+    // 搜索功能
+    handleSearch() {
+      this.loadData();
     }
   }
 };
