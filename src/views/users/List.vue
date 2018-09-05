@@ -77,6 +77,19 @@
       </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+      <el-pagination
+      style="margin-top: 15px"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 3, 4, 5]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+
   </el-card>
 </template>
 
@@ -85,39 +98,57 @@ export default {
   data() {
     return {
       tableData: [],
-      loading: true
+      // 加载提示
+      loading: true,
+      // 分页数据
+      // 页码
+      pagenum: 1,
+      // 页容量
+      pagesize: 2,
+      // 总数据量
+      total: 0
     };
   },
   created() {
-    // 组件创建完毕,加载数据
+    // 组件创建完毕，加载数据
     this.loadData();
   },
   methods: {
-    // 异步请求用用户列表数据
-    async loadData(){
+    // 异步请求用户列表数据
+    async loadData() {
+      // 请求开始
       // 设置token
       const token = sessionStorage.getItem('token');
-    // 设置请求头
-      this.$http.defaults.headers.common['Authorization'] = token;    
-     
-     const response = await this.$http.get('users?pagenum=1&pagesize=10');
+      // 设置请求头
+      this.$http.defaults.headers.common['Authorization'] = token;
+
+      const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
       // 请求结束
       this.loading = false;
-      const {meta:{msg,status}} = response.data;
-          if(status === 200 ) {
-            //注意两个dta
-            this.tableData = response.data.data.users;
-          }else {
-            this.$message.error(msg);
-          }
 
-      this.$http
-        .get('users?pagenum=1&pagesize=10')
-        .then((response) => {
-        })
-        .catch((err) => {
-          console.log(err);
-        })
+      const { meta: { msg, status } } = response.data;
+      // 判断获取数据是否ok
+      if (status === 200) {
+        this.tableData = response.data.data.users;
+        // 设置总条数
+        this.total = response.data.data.total;
+      } else {
+        this.$message.error(msg);
+      }
+    },
+    // 分页相关方法
+    handleSizeChange(val) {
+      // 页容量发送变化 val 页容量
+      this.pagesize = val;
+      this.loadData();
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      // 当页码发送改变执行  val就是当前页码
+      this.pagenum = val;
+      this.loadData();
+
+      console.log(`当前页: ${val}`);
     }
   }
 };
