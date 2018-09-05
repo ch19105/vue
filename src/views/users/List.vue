@@ -24,23 +24,34 @@
       border
       stripe
       style="width: 100%">
+      <!-- 序列化 -->
       <el-table-column
         type="index"
         width="50">
       </el-table-column>
+      <!-- 绑定对象的属性 -->
       <el-table-column
-        prop="date"
-        label="日期"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="name"
+        prop="username"
         label="姓名"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="地址">
+        prop="email"
+        label="邮箱"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="mobile"
+        label="电话"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="creat_time"
+        label="时间">
+      </el-table-column>
+      <el-table-column
+        prop="mg_state"
+        label="状态">
       </el-table-column>
     </el-table>
   </el-card>
@@ -50,24 +61,36 @@
 export default {
   data() {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
     };
+  },
+  created() {
+    // 组件创建完毕,加载数据
+    this.loadData();
+  },
+  methods: {
+    // 异步请求用用户列表数据
+    loadData(){
+      // 设置token
+      const token = sessionStorage.getItem('token');
+    // 设置请求头
+      this.$http.defaults.headers.common['Authorization'] = token;    
+     
+      this.$http
+        .get('users?pagenum=1&pagesize=10')
+        .then((response) => {
+          const {meta:{msg,status}} = response.data;
+          if(status === 200 ) {
+            //注意两个dta
+            this.tableData = response.data.data.users;
+          }else {
+            this.$message.error(msg);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    }
   }
 };
 </script>
