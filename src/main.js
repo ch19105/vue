@@ -9,10 +9,10 @@ import '@/assets/css/index.css';
 import MyHttp from '@/plugins/MyHttp';
 import moment from 'moment';
 
-//过滤器
+// 过滤器
 Vue.filter('fmtDate', (value, fmtStr) => {
-  return moment(value).format(fmtStr)
-})
+  return moment(value).format(fmtStr);
+});
 
 // 注册MyHttp插件
 Vue.use(MyHttp);

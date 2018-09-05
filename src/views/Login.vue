@@ -36,24 +36,23 @@ export default {
     // 登录
 
     async handleLogin() {
+      const response = await this.$http.post('login', this.formData);
+      const { meta: { msg, status } } = response.data;
+      if (status === 200) {
+        // 成功
+        // 跳转/提示/记录token
+        this.$message.success(msg);
+        // 记录token
+        // sessionStorage;
+        // localStorage;
+        sessionStorage.setItem('token', response.data.data.token);
 
-       const response = await this.$http.post('login',this.formData);
-        const { meta: { msg, status } } = response.data;
-        if (status === 200) {
-          // 成功
-          // 跳转/提示/记录token
-          this.$message.success(msg);
-          // 记录token
-          // sessionStorage;
-          // localStorage;
-          sessionStorage.setItem('token', response.data.data.token);
+        this.$router.push('/');
+      } else {
+        // 失败
+        this.$message.error(msg);
+      }
 
-          this.$router.push('/');
-        } else {
-          // 失败
-          this.$message.error(msg);
-        }
-        
       this.$http
         .post('login', this.formData)
         .then((response) => {
@@ -65,7 +64,7 @@ export default {
           // const msg = response.data.meta.msg;
 
           // 获取 response.data中的 msg和status
-    
+
         })
         .catch((err) => {
           console.log(err);
