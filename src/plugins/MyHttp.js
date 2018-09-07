@@ -1,4 +1,6 @@
 import axios from 'axios';
+//引用
+import { Loading } from 'element-ui';
 
 const MyHttp = {};
 // vue的插件 必须有一个公共的install方法
@@ -21,25 +23,26 @@ MyHttp.install = function (Vue) {
       config.headers.Authorization = token;
     }
 
-    // loadingInstance = Loading.service();
+    //发送请求之前,显示loading
+    loadingInstance = Loading.service();
     return config;
   }, function (error) {
     // Do something with request error
     return Promise.reject(error);
   });
 
-  // // Add a response interceptor
-  // // 添加响应的拦截器
-  // axios.interceptors.response.use(function (response) {
-  //   // 1. 隐藏加载提示
-  //   loadingInstance.close();
-  //   // Do something with response data
-  //   return response;
-  // }, function (error) {
-  //   // Do something with response error
-  //   return Promise.reject(error);
-  // });
-  // Vue.prototype.$http = axios;
+  // Add a response interceptor
+  // 添加响应的拦截器
+  axios.interceptors.response.use(function (response) {
+    // 1. 隐藏加载提示
+    loadingInstance.close();
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Do something with response error
+    return Promise.reject(error);
+  });
+  Vue.prototype.$http = axios;
 };
 
 
