@@ -128,8 +128,7 @@
         <el-form-item label="电话">
           <el-input v-model="formData.mobile" auto-complete="off"></el-input>
         </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
+      </el-form>   
         <el-button @click="addUserDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="handleAdd">确 定</el-button>
       </div>
@@ -258,10 +257,10 @@ export default {
     async loadData() {
       // 请求开始
       this.loading = true;
-      // 设置token
-      const token = sessionStorage.getItem('token');
-      // 设置请求头
-      this.$http.defaults.headers.common['Authorization'] = token;
+      // // 设置token
+      // const token = sessionStorage.getItem('token');
+      // // 设置请求头
+      // this.$http.defaults.headers.common['Authorization'] = token;
 
       const response = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`);
       // 请求结束
