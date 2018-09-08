@@ -84,7 +84,7 @@
                <el-button size="mini"
                type="danger" icon="el-icon-delete" plain></el-button>
                <el-button size="mini"
-               type="success" @click="handleOpenDialog" icon="el-icon-check" plain></el-button>
+               type="success" @click="handleOpenDialog(scope.row)" icon="el-icon-check" plain></el-button>
               </template>
             </el-table-column>
       </el-table>
@@ -96,8 +96,11 @@
         <!-- 数状控件 -->
         <!-- data 绑定在树上的数据 -->
         <!-- props  告诉树展示的属性 -->
+        <!-- 使用这个必须使用node-key -->
         <el-tree
         default-expand-all
+        node-key="id"
+        :default-checked-keys="checkedKeys"
         :data="data"
         show-checkbox
         :props="defaultProps">
@@ -122,7 +125,8 @@ export default {
             label: 'authName',
             // 对象子节点绑定的对象属性
             children: 'children'
-          }
+          },
+          checkedKeys:[]
         };
     },
     created() {
@@ -157,11 +161,26 @@ export default {
         }
       },
       //点击按钮显示对话框
-      async handleOpenDialog() {
+      async handleOpenDialog(role) {
         this.dialogVisible = true;
         //获取所有权限
         const response = await this.$http.get(`rights/tree`);
         this.data = response.data.data;
+
+        // 设置当前角色拥有的权限被选中
+        // 当前角色拥有的三级权限
+        const arr = [];
+        // 遍历一级权限
+        role.children.forEach((level1) => {
+          // 遍历二级权限
+          level1.children.forEach((level2) => {
+            level2.children.forEach((level3) => {
+              arr.push(level3.id)  
+             });
+           
+          });
+        });
+        this.checkedKeys = arr;
       }
     }
 };
