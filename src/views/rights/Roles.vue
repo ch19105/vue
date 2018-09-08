@@ -38,12 +38,22 @@
                         {{ level2.authName }}
                        </el-tag>
                      </el-col>
-                     <el-col :span="20"></el-col>
+
+                     <el-col :span="20">
+                       <!-- 三级权限 -->
+                      <el-tag
+                      class="level3"
+                      closable
+                      type="warning"
+                      v-for="level3 in level2.children"
+                      :key="level3.id">
+                        {{ level3.authName }}
+                       </el-tag>
+                        
+                     </el-col>
                   </el-row>
                 </el-col>
-              
-                   
-                  
+
               </el-row>
             </template>
           </el-table-column>
@@ -105,5 +115,8 @@ export default {
 .card {
     height: 100%;
     overflow: auto;
+}
+.level3 {
+  margin: 0 7px 7px 0;
 }
 </style>
