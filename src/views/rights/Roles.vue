@@ -84,10 +84,22 @@
                <el-button size="mini"
                type="danger" icon="el-icon-delete" plain></el-button>
                <el-button size="mini"
-               type="success" icon="el-icon-check" plain></el-button>
+               type="success" @click="handleOpenDialog" icon="el-icon-check" plain></el-button>
               </template>
             </el-table-column>
       </el-table>
+
+      <!-- 对话框 -->
+      <el-dialog
+        title="分配权限"
+        width="30%"
+        :visible.sync="dialogVisible">
+        <span>这是一段信息</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-card>
 </template>
 
@@ -95,7 +107,8 @@
 export default {
     data() {
         return {
-          tableData: []
+          tableData: [],
+          dialogVisible: false
         };
     },
     created() {
@@ -128,6 +141,10 @@ export default {
         } else {
           this.$message.error(msg);
         }
+      },
+      //点击按钮显示对话框
+      handleOpenDialog() {
+        this.dialogVisible = true;
       }
     }
 };
