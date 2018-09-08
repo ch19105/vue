@@ -109,14 +109,25 @@ export default {
         if (status === 200 ) {
           this.tableData = response.data.data;
         } else {
-          this.$message.error(error);
+          this.$message.error(msg);
         }
       },
       //删除当前角色对应的权限
-      handleClose(role,rightId) {
+      async handleClose(role,rightId) {
         // role 当前对应的角色对象
         // rightId 当前权限的id
-        alert(rightId);
+        // - 请求路径：roles/:roleId/rights/:rightId
+        // - 请求方法：delete
+        const response = await this.$http.delete(`roles/${role.id}/rights/${rightId}`);
+        //解构状态码
+        const { meta :{ msg , status }} = response.data;
+        if (status === 200 ) {
+          this.$message.success(msg);
+          //刷新权限列表
+          role.children = response.data.data;
+        } else {
+          this.$message.error(msg);
+        }
       }
     }
 };
