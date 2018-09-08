@@ -24,12 +24,12 @@
           <el-table-column
               prop="roleName"
               label="角色名称"
-              width="180">
+              width="300">
           </el-table-column>
           <el-table-column
               prop="roleDesc"
               label="角色描述"
-              width="180">
+              width="300">
           </el-table-column>
           <el-table-column
              label="操作">
@@ -52,6 +52,21 @@ export default {
         return {
           tableData: []
         };
+    },
+    created() {
+      this.loadData();
+    },
+    methods: {
+      async loadData() {
+        const response = await this.$http.get('roles');
+
+        const { meta: {msg , status } } = response.data;
+        if (status === 200 ) {
+          this.tableData = response.data.data;
+        } else {
+          this.$message.error(error);
+        }
+      }
     }
 };
 </script>
