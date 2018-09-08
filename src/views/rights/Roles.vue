@@ -22,7 +22,7 @@
                     <!-- 显示一级权限的名字 -->
                     <el-tag
                     closable
-                    >{{ level1.authName }}</el-tag>
+                    @close="handleClose(scope.row,level1.id)">{{ level1.authName }}</el-tag>
                 </el-col>
 
                 <el-col :span="20">
@@ -34,8 +34,8 @@
                        <!-- 显示二级权限的名字 -->
                        <el-tag
                         closable
-                        type="success">
-                        {{ level2.authName }}
+                        type="success"
+                        @close="handleClose(scope.row,level2.id)">{{ level2.authName }}
                        </el-tag>
                      </el-col>
 
@@ -46,8 +46,8 @@
                       closable
                       type="warning"
                       v-for="level3 in level2.children"
-                      :key="level3.id">
-                        {{ level3.authName }}
+                      :key="level3.id"
+                      @close="handleClose(scope.row,level3.id)">{{ level3.authName }}
                        </el-tag>
                         
                      </el-col>
@@ -59,7 +59,7 @@
             <el-row v-if="scope.row.children.length === 0 ">
               <el-col :span="24">未分配权限</el-col>
             </el-row>
-            
+
             </template>
           </el-table-column>
           <el-table-column
@@ -111,6 +111,12 @@ export default {
         } else {
           this.$message.error(error);
         }
+      },
+      //删除当前角色对应的权限
+      handleClose(role,rightId) {
+        // role 当前对应的角色对象
+        // rightId 当前权限的id
+        alert(rightId);
       }
     }
 };
