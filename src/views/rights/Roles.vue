@@ -24,7 +24,26 @@
                     closable
                     >{{ level1.authName }}</el-tag>
                 </el-col>
-                <el-col :span="20"></el-col>
+
+                <el-col :span="20">
+                  <!-- 二级权限-->
+                  <el-row
+                  v-for="level2 in level1.children"
+                  :key="level2.id">
+                     <el-col :span="4">
+                       <!-- 显示二级权限的名字 -->
+                       <el-tag
+                        closable
+                        type="success">
+                        {{ level2.authName }}
+                       </el-tag>
+                     </el-col>
+                     <el-col :span="20"></el-col>
+                  </el-row>
+                </el-col>
+              
+                   
+                  
               </el-row>
             </template>
           </el-table-column>
