@@ -1,6 +1,7 @@
 <template>
     <el-card class="card">
-        hello
+        <!-- 面包屑引用 -->
+       <my-breadcrumb level1="权限管理" level2="角色管理"></my-breadcrumb>
     </el-card>
 </template>
 

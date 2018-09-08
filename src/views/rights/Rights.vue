@@ -1,11 +1,7 @@
 <template>
     <el-card class="card">
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-    <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-    <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-    <el-breadcrumb-item>活动详情</el-breadcrumb-item>   
-    </el-breadcrumb>
+      <!-- 面包屑引用 -->
+      <my-breadcrumb level1="权限管理" level2="权限列表"></my-breadcrumb>
         <!-- 表格 -->
     <el-table
       border
