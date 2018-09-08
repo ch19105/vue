@@ -131,7 +131,7 @@
       </el-form>   
         <el-button @click="addUserDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="handleAdd">确 定</el-button>
-      </div>
+      <!-- </div> -->
     </el-dialog>
 
     <!-- 修改用户的对话框 -->

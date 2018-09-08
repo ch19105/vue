@@ -14,7 +14,18 @@
           <!-- 展开行  expand-->
           <el-table-column type="expand">
             <template slot-scope="scope">
-              hello
+              <!-- 一级权限 -->
+              <el-row
+                v-for="level1 in scope.row.children"
+                :key="level1.id">
+                <el-col :span="4">
+                    <!-- 显示一级权限的名字 -->
+                    <el-tag
+                    closable
+                    >{{ level1.authName }}</el-tag>
+                </el-col>
+                <el-col :span="20"></el-col>
+              </el-row>
             </template>
           </el-table-column>
           <el-table-column
