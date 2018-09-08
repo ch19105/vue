@@ -92,9 +92,16 @@
       <!-- 对话框 -->
       <el-dialog
         title="分配权限"
-        width="30%"
         :visible.sync="dialogVisible">
-        <span>这是一段信息</span>
+        <!-- 数状控件 -->
+        <!-- data 绑定在树上的数据 -->
+        <!-- props  告诉树展示的属性 -->
+        <el-tree
+        default-expand-all
+        :data="data"
+        show-checkbox
+        :props="defaultProps">
+        </el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -108,7 +115,14 @@ export default {
     data() {
         return {
           tableData: [],
-          dialogVisible: false
+          dialogVisible: false,
+          data: [],
+          defaultProps: {
+            // 树上的节点绑定对象的属性
+            label: 'authName',
+            // 对象子节点绑定的对象属性
+            children: 'children'
+          }
         };
     },
     created() {
@@ -143,8 +157,11 @@ export default {
         }
       },
       //点击按钮显示对话框
-      handleOpenDialog() {
+      async handleOpenDialog() {
         this.dialogVisible = true;
+        //获取所有权限
+        const response = await this.$http.get(`rights/tree`);
+        this.data = response.data.data;
       }
     }
 };
