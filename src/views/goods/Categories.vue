@@ -48,7 +48,15 @@
 </template>
 
 <script>
+
+// 配置tree grid的局部组件
+import ElTreeGrid from 'element-tree-grid';
+
 export default {
+  // 注册局部组件
+  components: {
+    'el-table-tree-column' : ElTreeGrid
+  },
   data() {
     return {
       tableData: []
