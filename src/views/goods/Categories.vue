@@ -4,8 +4,11 @@
     <my-breadcrumb level1="商品管理" level2="商品列表"></my-breadcrumb> 
     <!-- 添加按钮 -->
     <el-button style="margin-top: 10px ; margin-bottom: 10px;"
-    type="success" plain>添加分类</el-button>
+    type="success"
+    @click="addDialogFormVisible = true"
+    plain>添加分类</el-button>
     <!-- 表格 -->
+    <!-- height-属性 - 固定表头 -->
     <el-table
       border
       stripe
@@ -66,7 +69,25 @@
       :total="total"
       style="margin-top: 5px">
     </el-pagination>
-
+  
+    <!-- 添加的弹出框 -->
+    <el-dialog title="收货地址"
+    :visible.sync="addDialogFormVisible">
+      <el-form
+      label-width="80px"
+      :model="form">
+        <el-form-item label="分类名称">
+          <el-input v-model="form.cat_name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="父级分类">
+          <!-- 多级下拉框 -->
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addDialogFormVisible = false">确 定</el-button>
+  </div>
+</el-dialog>
   </el-card>
 </template>
 
@@ -86,7 +107,13 @@ export default {
       // 分页数据
       pagenum: 1,
       pagesize: 10,
-      total: 0
+      total: 0,
+      //控制添加对话框的显示与隐藏
+      addDialogFormVisible: false,
+      form : {
+
+      }
+      
 
     };
   },
