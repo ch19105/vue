@@ -12,8 +12,5 @@ export default {
 
 <!-- scoped h5提供 ,指定当前作用的范围 -->
 <style scoped>
-.card {
-  height: 100%;
-  overflow: auto;
-}
+
 </style>

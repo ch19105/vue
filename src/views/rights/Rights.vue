@@ -65,11 +65,6 @@ export default {
 
 
 <style scoped>
-.card {
-    width: 100%;
-    height: 100%;
-    overflow: auto; 
-    /* el-card自带溢出隐藏 */
-}
+
 </style>
 
