@@ -53,6 +53,7 @@
              <el-button size="mini"
                type="primary" icon="el-icon-edit" plain></el-button>
                <el-button size="mini"
+               @click="handleDelete(scope.row)"
                type="danger" icon="el-icon-delete" plain></el-button>
           </template>
       </el-table-column>
@@ -203,6 +204,33 @@ export default {
         this.$message.error(msg);
       }
 
+    },
+    //点击删除按钮, 删除分类
+    async handleDelete(cat) {
+      //cat 要删除的分类对象
+      //删除提示 这是promise , 所一简化代码,.then/.catch都不要
+      try {
+         await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        });
+    //  点击完确定按钮要执行的代码
+        const response = await this.$http.delete(`categories/${cat.cat_id}`);
+        //解构
+        const { meta : { msg , status } } = response.data;
+        if ( status === 200 ) {
+          this.$message.success(msg);
+          // 刷新页面
+          this.loadData();
+        } else {
+          this.$message.error(msg);
+        }
+      }catch(err) {
+        // 点击取消按钮执行
+        alert(2)
+      }
+     
     }
   }
 }
