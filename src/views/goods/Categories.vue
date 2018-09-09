@@ -5,7 +5,7 @@
     <!-- 添加按钮 -->
     <el-button style="margin-top: 10px ; margin-bottom: 10px;"
     type="success"
-    @click="addDialogFormVisible = true"
+    @click="handleOpenAddDialog"
     plain>添加分类</el-button>
     <!-- 表格 -->
     <!-- height-属性 - 固定表头 -->
@@ -71,7 +71,8 @@
     </el-pagination>
   
     <!-- 添加的弹出框 -->
-    <el-dialog title="收货地址"
+    <el-dialog
+    title="添加商品分类"
     :visible.sync="addDialogFormVisible">
       <el-form
       label-width="80px"
@@ -80,7 +81,18 @@
           <el-input v-model="form.cat_name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="父级分类">
-          <!-- 多级下拉框 -->
+          <!-- 多级下拉框
+          expand-trigger 触发展开的事件
+          options 提供展示的数据 是数组 
+          change-on-select 选择任一级菜单-->
+          <el-cascader
+           clearable
+           change-on-select
+           expand-trigger="hover"
+           :options="options"
+           :props="{label: 'cat_name', value: 'cat_id', children: 'children'}"
+            v-model="selectedOptions">
+          </el-cascader>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -108,13 +120,16 @@ export default {
       pagenum: 1,
       pagesize: 10,
       total: 0,
+
       //控制添加对话框的显示与隐藏
       addDialogFormVisible: false,
       form : {
+        cat_name: ''
+      },
 
-      }
-      
-
+      // 绑定多级下拉框
+      options: [],
+      selectedOptions: []
     };
   },
   created() {
@@ -140,11 +155,17 @@ export default {
     handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
       },
-      handleCurrentChange(val) {
-        this.pagenum = val;
-        this.loadData();
-        console.log(`当前页: ${val}`);
-      }
+    handleCurrentChange(val) {
+      this.pagenum = val;
+      this.loadData();
+      console.log(`当前页: ${val}`);
+    },
+  // 点击添加按钮，弹出添加对话框，加载多级下拉框数据
+    async handleOpenAddDialog() {
+      this.addDialogFormVisible = true;
+      const response = await this.$http.get('categories?type=2');
+      this.options = response.data.data;
+    }
   }
 }
 </script>
