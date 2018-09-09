@@ -11,11 +11,20 @@
       stripe
       :data="tableData"
       style="width: 100%">
-      <el-table-column
+      <!-- treeKey 设置每一项的唯一标识
+      parentKey 绑定到父id的属性
+      levelKey  绑定到不同级别的属性
+      indentSize 设置不同级别之间的缩进
+      childKey  展开子元素,,默认值,children -->
+      <el-table-tree-column
+        treeKey="cat_id"
+        parentKey="cat_pid"
+        levelKey="cat_level"
+        :indentSize="25"
         prop="cat_name"
         label="分类名称"
         width="300">
-      </el-table-column>
+      </el-table-tree-column>
       <el-table-column
         prop="cat_level"
         label="级别"
