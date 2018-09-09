@@ -9,6 +9,7 @@
     <el-table
       border
       stripe
+      :height="578"
       :data="tableData"
       style="width: 100%">
       <!-- treeKey 设置每一项的唯一标识
@@ -59,10 +60,11 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
-      :page-sizes="[100, 200, 300, 400]"
+      :page-sizes="[10, 20, 30, 40]"
       :page-size="pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
+      :total="total"
+      style="margin-top: 5px">
     </el-pagination>
 
   </el-card>
@@ -92,13 +94,16 @@ export default {
     this.loadData();
   },
   methods: {
+    // 加载商品分类数据
     async loadData() {
       const response = await this.$http.get(`categories?type
-      =3&pagenum=1&pagesize=5`);
+      =3&pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
 
       const { meta: { msg ,status }} = response.data;
       if (status === 200) {
         this.tableData = response.data.data.result;
+        // 获取响应之后,设置total的值
+        this.total = response.data.data.total;
       }else {
         this.$message.error(msg);
       }
@@ -109,6 +114,8 @@ export default {
         console.log(`每页 ${val} 条`);
       },
       handleCurrentChange(val) {
+        this.pagenum = val;
+        this.loadData();
         console.log(`当前页: ${val}`);
       }
   }
