@@ -116,7 +116,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogFormVisible = false">取 消</el-button>
-      <el-button type="primary">确 定</el-button>
+      <el-button type="primary"
+      @click="handleEdit">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -151,7 +152,9 @@ export default {
 
       // 绑定多级下拉框
       options: [],
-      selectedOptions: []
+      selectedOptions: [],
+      //点击编辑按钮 , 记录当前编辑的 分类对象
+      currentCat : null
     };
   },
   created() {
@@ -257,6 +260,22 @@ export default {
     handleOpenEditDialog(cat) {
       this.editDialogFormVisible = true;
       this.form.cat_name = cat.cat_name;
+      //几率当前的分类对象
+      this.currentCat = cat;
+    },
+    // 点击确定按钮, 编辑分类
+    async handleEdit() {
+      const response = await this.$http.put(`categories/${this.currentCat.cat_id}`,
+      this.form);
+      const { meta : { msg , status } } = response.data;
+      if ( status === 200 ) {
+        this.$message.success(msg);
+        this.editDialogFormVisible = false;
+        this.currentCat.cat_name = response.data.data.cat_name;
+      } else {
+        this.$message.error(msg);
+        
+      }
     }
   }
 };
