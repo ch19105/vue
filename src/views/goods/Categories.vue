@@ -53,6 +53,18 @@
           </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+     <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[100, 200, 300, 400]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+
   </el-card>
 </template>
 
@@ -68,7 +80,12 @@ export default {
   },
   data() {
     return {
-      tableData: []
+      tableData: [],
+      // 分页数据
+      pagenum: 1,
+      pagesize: 10,
+      total: 0
+
     };
   },
   created() {
@@ -86,7 +103,14 @@ export default {
         this.$message.error(msg);
       }
     
-    }
+    },
+    // 分页方法
+    handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+      }
   }
 }
 </script>
