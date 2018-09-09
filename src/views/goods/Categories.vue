@@ -97,7 +97,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addDialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addDialogFormVisible = false">确 定</el-button>
+    <el-button type="primary" @click="handleAdd">确 定</el-button>
   </div>
 </el-dialog>
   </el-card>
@@ -165,6 +165,44 @@ export default {
       this.addDialogFormVisible = true;
       const response = await this.$http.get('categories?type=2');
       this.options = response.data.data;
+    },
+
+  //点击确定按钮,添加分类
+    async handleAdd() {
+      
+      // cat_level  0 1 2
+      // cat_level  this.selectedOptions.length === 0 -- 0  一级
+      // cat_level  this.selectedOptions.length === 1 -- 1  二级
+      // cat_level  this.selectedOptions.length === 2 -- 2  三级
+      this.form.cat_level = this.selectedOptions.length;
+
+      // cat_pid  一级分类 0
+      // cat_pid  二级分类 this.selectedOptions[0]
+      // cat_pid  三级分类 this.selectedOptions[1]
+      if (this.selectedOptions.length === 0 ) {
+        //添加一级分类
+        this.form.cat_pid = 0
+      } else if (this.selectedOptions.length === 1 ) {
+        //添加二级分类
+        this.form.cat_pid = this.selectedOptions[0];
+      } else if (this.selectedOptions.length === 2 ) {
+        // 添加三级分类
+        this.form.cat_pid = this.selectedOptions[1];
+      }
+      //发送异步请求 ,添加商品分类
+      const response = await this.$http.post('categories',this.form);
+      const { meta : { msg , status }} = response.data;
+      if (status === 201 ) {
+        // 添加成功
+        this.$message.success(msg);
+        // 关闭对话框
+        this.addDialogFormVisible = false;
+        // 刷新
+        this.loadData();
+      }else {
+        this.$message.error(msg);
+      }
+
     }
   }
 }
