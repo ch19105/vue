@@ -51,6 +51,7 @@
         label="操作">
           <template slot-scope="scope">
              <el-button size="mini"
+               @click="handleOpenEditDialog(scope.row)"
                type="primary" icon="el-icon-edit" plain></el-button>
                <el-button size="mini"
                @click="handleDelete(scope.row)"
@@ -99,8 +100,26 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="addDialogFormVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleAdd">确 定</el-button>
-  </div>
-</el-dialog>
+    </div>
+    </el-dialog>
+
+    <!-- 编辑弹框 -->
+     <el-dialog
+    title="修改商品分类"
+    :visible.sync="editDialogFormVisible">
+      <el-form
+      label-width="80px"
+      :model="form">
+        <el-form-item label="分类名称">
+          <el-input v-model="form.cat_name" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editDialogFormVisible = false">取 消</el-button>
+      <el-button type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </el-card>
 </template>
 
@@ -124,6 +143,8 @@ export default {
 
       //控制添加对话框的显示与隐藏
       addDialogFormVisible: false,
+      // 编辑的对话框显示与隐藏
+      editDialogFormVisible: false,
       form : {
         cat_name: ''
       },
@@ -231,9 +252,14 @@ export default {
         alert(2)
       }
      
+    },
+    // 点击修改按钮 ,修改
+    handleOpenEditDialog(cat) {
+      this.editDialogFormVisible = true;
+      this.form.cat_name = cat.cat_name;
     }
   }
-}
+};
 </script>
 
 <!-- scoped h5提供 ,指定当前作用的范围 -->
